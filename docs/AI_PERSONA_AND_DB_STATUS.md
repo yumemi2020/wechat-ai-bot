@@ -242,7 +242,7 @@ flowchart TD
 ## 10. 主要原始碼檔案索引
 
 ```
-ai.wechat.project/
+wechat-ai-bot/
 ├── main.py                 # 後端全部邏輯（Webhook、API、DB、LLM）
 ├── requirements.txt        # Python 依賴
 ├── .env / .env.example     # 環境變數（LLM、微信、DB）

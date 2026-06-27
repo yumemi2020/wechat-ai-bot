@@ -78,9 +78,7 @@ docker compose up -d --build
 
 ### Portainer 部署
 
-若使用 [Portainer](https://www.portainer.io/) 管理容器，可參考 [`deploy/portainer-stack.example.yml`](deploy/portainer-stack.example.yml)。將其中的 `<YOUR_DATA_PATH>` 替換為宿主機專案路徑後，於 Portainer **Stacks → Add stack** 貼上部署。
-
-匯出與去敏說明見 [`deploy/README.md`](deploy/README.md)。
+若使用 [Portainer](https://www.portainer.io/) 管理容器，可參考 [`deploy/portainer-stack.example.yml`](deploy/portainer-stack.example.yml)。將其中的 `<YOUR_DATA_PATH>` 替換為宿主機專案路徑後，於 Portainer **Stacks → Add stack** 貼上部署。更多說明見 [`deploy/README.md`](deploy/README.md)。
 
 ## 環境變數
 

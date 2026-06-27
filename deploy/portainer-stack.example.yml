@@ -1,4 +1,4 @@
-# Portainer Stack 範例（已去敏）
+# Portainer Stack 範例
 #
 # 使用方式：
 #   1. 將 <YOUR_DATA_PATH> 替換為專案在宿主機上的實際路徑（例如 /volume1/docker/wechat-ai-bot）

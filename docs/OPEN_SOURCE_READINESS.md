@@ -14,7 +14,7 @@
 
 | 項目 | 狀態 |
 |------|------|
-| 真實內網 IP（如 192.168.x.x） | ✅ 已清除，僅文件中以 `192.168.x.x` 作為去敏說明範例 |
+| 真實內網 IP（如 192.168.x.x） | ✅ 無，文件中僅保留泛用範例 |
 | PadPro auth key / 微信 wxid | ✅ 已清除，改為 placeholder |
 | 真實資料庫密碼 | ✅ 已清除，統一為 `changeme` 或 `${MYSQL_ROOT_PASSWORD:-changeme}` |
 | NAS 絕對路徑 | ✅ 已清除，Portainer 範例使用 `<YOUR_DATA_PATH>` |
@@ -94,8 +94,7 @@ c:\ai.wechat.bot\
 | `2daea24c-8f7c-4c2b-bcfb-61a39c64a1ca`（舊 PadPro key） | 無 |
 | `a40445210`（舊 wxid） | 無 |
 | `RootPassword123` | 無 |
-| `yumemi.hourcenter.org.tw` | 無（已自 vite.config.js 移除） |
-| `/volume1/docker/ai.wechat.project` | 僅出現在 `deploy/README.md` 作為「去敏對照範例」 |
+| `yumemi.hourcenter.org.tw` | 無 |
 | OpenAI `sk-...` 金鑰 | 無 |
 
 ### 4.2 刻意保留的公開資訊（非機密）
@@ -114,7 +113,7 @@ c:\ai.wechat.bot\
 以下為**變數名、API 欄位、文件說明**，不含真實值，屬正常開源程式碼：
 
 - `PADPRO_AUTH_KEY`、`PADPRO_WXID`、`api_key`、`wx_id`（`main.py`、`App.vue`、`api.js`）
-- `deploy/README.md` 去敏檢查清單文字
+- `deploy/README.md` 部署說明
 
 ---
 
@@ -165,7 +164,7 @@ git add -n .
 
 預期：
 
-- 第一個指令：**無匹配**（`deploy/README.md` 若命中 `ai.wechat.project` 僅為去敏說明文字，可接受）。
+- 第一個指令：**無匹配**。
 - 第二個指令：皆為 `False`。
 - `git add -n .` 不應包含 `.env`、`db_data/`、`photos/` 等。
 
