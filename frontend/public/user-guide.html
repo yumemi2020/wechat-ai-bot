@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WeChat AI Bot 使用指南 · 測試版 v0.12</title>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --text: #1e293b;
+      --muted: #64748b;
+      --accent: #4f46e5;
+      --accent-soft: #eef2ff;
+      --accent-dark: #3730a3;
+      --border: #e2e8f0;
+      --ok: #059669;
+      --ok-soft: #d1fae5;
+      --warn: #d97706;
+      --warn-soft: #fef3c7;
+      --sidebar-w: 220px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: "Segoe UI", "PingFang TC", "Microsoft JhengHei", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.75;
+      font-size: 16px;
+    }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .layout { display: flex; min-height: 100vh; }
+    .sidebar {
+      width: var(--sidebar-w);
+      flex-shrink: 0;
+      background: var(--card);
+      border-right: 1px solid var(--border);
+      padding: 1.25rem 1rem;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+    }
+    .sidebar h2 {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+      margin-bottom: 0.75rem;
+    }
+    .sidebar nav a {
+      display: block;
+      padding: 0.45rem 0.65rem;
+      border-radius: 8px;
+      color: var(--text);
+      font-size: 0.9rem;
+      text-decoration: none;
+      margin-bottom: 3px;
+    }
+    .sidebar nav a:hover { background: var(--accent-soft); color: var(--accent-dark); }
+    .sidebar .tech-link {
+      margin-top: 1.25rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--border);
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+    .main { flex: 1; padding: 2rem 2.5rem 4rem; max-width: 780px; }
+    .hero {
+      background: linear-gradient(135deg, #3730a3 0%, #4f46e5 55%, #6366f1 100%);
+      color: #fff;
+      border-radius: 16px;
+      padding: 2rem 2.25rem;
+      margin-bottom: 2rem;
+    }
+    .hero .badge {
+      display: inline-block;
+      background: rgba(255,255,255,0.22);
+      padding: 0.3rem 0.85rem;
+      border-radius: 999px;
+      font-size: 0.82rem;
+      margin-bottom: 0.85rem;
+    }
+    .hero h1 { font-size: 1.85rem; font-weight: 700; margin-bottom: 0.6rem; line-height: 1.3; }
+    .hero p { opacity: 0.94; font-size: 1rem; max-width: 560px; }
+    section {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem 1.75rem;
+      margin-bottom: 1.25rem;
+    }
+    section h2 {
+      font-size: 1.25rem;
+      margin-bottom: 0.85rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid var(--accent-soft);
+      color: var(--accent-dark);
+    }
+    section h3 {
+      font-size: 1.05rem;
+      margin: 1.35rem 0 0.55rem;
+      color: #334155;
+    }
+    p { margin-bottom: 0.85rem; }
+    ul, ol { margin: 0 0 0.85rem 1.35rem; }
+    li { margin-bottom: 0.45rem; }
+    .step {
+      display: flex;
+      gap: 1rem;
+      margin: 1rem 0;
+      align-items: flex-start;
+    }
+    .step-num {
+      flex-shrink: 0;
+      width: 2rem;
+      height: 2rem;
+      border-radius: 50%;
+      background: var(--accent);
+      color: #fff;
+      font-weight: 700;
+      font-size: 0.95rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .step-body { flex: 1; padding-top: 0.15rem; }
+    .step-body strong { color: var(--accent-dark); }
+    .tip {
+      background: var(--ok-soft);
+      border-left: 4px solid var(--ok);
+      padding: 0.85rem 1.1rem;
+      border-radius: 0 10px 10px 0;
+      margin: 1rem 0;
+      font-size: 0.95rem;
+    }
+    .warn {
+      background: var(--warn-soft);
+      border-left: 4px solid var(--warn);
+      padding: 0.85rem 1.1rem;
+      border-radius: 0 10px 10px 0;
+      margin: 1rem 0;
+      font-size: 0.95rem;
+    }
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 0.85rem;
+      margin: 1rem 0;
+    }
+    .mini-card {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1rem;
+      background: #fafafa;
+      font-size: 0.92rem;
+    }
+    .mini-card .icon { font-size: 1.5rem; margin-bottom: 0.35rem; }
+    .mini-card strong { display: block; margin-bottom: 0.25rem; color: #334155; }
+    .btn-ref {
+      display: inline-block;
+      background: var(--accent-soft);
+      color: var(--accent-dark);
+      padding: 0.15rem 0.55rem;
+      border-radius: 6px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      border: 1px solid #c7d2fe;
+    }
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      margin-bottom: 1rem;
+      font-size: 0.9rem;
+    }
+    body.embed .back-link { display: none; }
+    body.embed .main { padding-top: 1.25rem; }
+    body.embed .sidebar { display: none; }
+    body.embed .layout { display: block; }
+    @media (max-width: 768px) {
+      .layout { flex-direction: column; }
+      .sidebar { width: 100%; height: auto; position: static; }
+      .main { padding: 1.25rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <h2>目錄</h2>
+      <nav>
+        <a href="#welcome">歡迎使用</a>
+        <a href="#screen">認識畫面</a>
+        <a href="#enable-ai">開啟 AI 代答</a>
+        <a href="#persona">調整 AI 個性</a>
+        <a href="#photos">上傳與管理照片</a>
+        <a href="#per-contact">每位客戶不同個性</a>
+        <a href="#memory">長期記憶</a>
+        <a href="#manual-reply">親自回覆訊息</a>
+        <a href="#view-chat">查看對話內容</a>
+        <a href="#faq">常見問題</a>
+        <a href="#advanced">進階設定說明</a>
+      </nav>
+      <p class="tech-link">
+        工程師或維運人員請參閱<br />
+        <a href="/manual.html">技術操作手冊 →</a>
+      </p>
+    </aside>
+
+    <main class="main">
+      <a class="back-link" href="/">← 返回控制台</a>
+
+      <div class="hero">
+        <span class="badge">給一般使用者 · 測試版 v0.12</span>
+        <h1>WeChat AI Bot 使用指南</h1>
+        <p>
+          這份說明專為<strong>日常操作人員</strong>撰寫。系統安裝、微信綁定、伺服器維護由工程師處理；
+          您只需要會用網頁控制台，就能讓 AI 幫您回覆微信訊息。
+        </p>
+      </div>
+
+      <section id="welcome">
+        <h2>1. 歡迎使用</h2>
+        <p>
+          WeChat AI Bot 是一套「微信自動回覆助手」。當客戶或好友傳訊息到微信時，
+          系統可以依照您設定的<strong>個性與記憶</strong>，自動幫您打字回覆。
+        </p>
+        <div class="card-grid">
+          <div class="mini-card">
+            <div class="icon">✅</div>
+            <strong>您需要會的</strong>
+            開關 AI、調整個性、上傳照片、編輯記憶、必要時親自回覆
+          </div>
+          <div class="mini-card">
+            <div class="icon">🔧</div>
+            <strong>工程師會處理</strong>
+            安裝程式、連接微信、設定網址、排除伺服器故障
+          </div>
+        </div>
+        <div class="tip">
+          <strong>小提示：</strong>請向工程師索取控制台網址（通常在瀏覽器開啟，例如 <code>http://伺服器IP:9960</code>），並確認右上角顯示「已連線」。
+        </div>
+      </section>
+
+      <section id="screen">
+        <h2>2. 認識控制台畫面</h2>
+        <p>打開網頁後，畫面大致分成三個區域：</p>
+        <h3>頂部按鈕列</h3>
+        <ul>
+          <li><span class="btn-ref">版本號</span> — 點一下可開啟本說明</li>
+          <li><span class="btn-ref">AI 已開啟 / 已關閉</span> — 總開關，關閉後所有人都<strong>不會</strong>自動回覆</li>
+          <li><span class="btn-ref">📷 圖片庫</span> — 管理 AI 可以發送的照片</li>
+          <li><span class="btn-ref">⚙️ 人設設定</span> — 調整 AI 的說話風格與個性</li>
+          <li><span class="btn-ref">🛠️ 系統設定</span> — 微信登入、AI 模型等（多由工程師操作）</li>
+        </ul>
+        <h3>左側：聯絡人清單</h3>
+        <p>顯示有對話紀錄的微信好友或群組。點選某位聯絡人，右側就會顯示對話內容。</p>
+        <h3>右側：對話與設定</h3>
+        <p>上方可為該聯絡人開關 AI、選擇專屬個性；中間是聊天紀錄；下方在 AI 關閉時可手動輸入回覆。</p>
+      </section>
+
+      <section id="enable-ai">
+        <h2>3. 讓某位好友由 AI 代答</h2>
+        <p>新聯絡人預設<strong>不會</strong>自動回覆，需要您手動開啟。</p>
+
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">確認頂部總開關為 <strong>「AI 已開啟」</strong>（綠色）。若是灰色「已關閉」，請先點一下打開。</div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">在左側清單<strong>點選該聯絡人</strong>。</div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">在右側上方找到 <strong>「允許 AI 代答」</strong> 開關，撥到開啟。</div>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-body">請對方傳一則文字訊息測試。若 AI 正在思考，聯絡人旁會短暫顯示「AI 處理中」。</div>
+        </div>
+
+        <div class="warn">
+          <strong>注意：</strong>群組對話新建時同樣預設關閉 AI。若不想讓 AI 在群組裡亂回，請保持關閉即可。
+        </div>
+      </section>
+
+      <section id="persona">
+        <h2>4. 調整 AI 個性（人設設定）</h2>
+        <p>「人設」就是 AI 的說話方式：語氣、角色、禁忌、產品介紹重點等，都寫在這裡。</p>
+
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">點頂部 <span class="btn-ref">⚙️ 人設設定</span>。</div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">左側選擇要編輯的人設，或點 <strong>「新建人設」</strong> 建立新的個性。</div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">在右側文字框撰寫說明，例如：「你是親切的客服小美，用繁體中文、語氣溫柔，不要承諾無法兌現的優惠。」</div>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-body">點 <strong>「儲存」</strong>，再點 <strong>「套用此人設」</strong> 讓它成為全域預設。</div>
+        </div>
+
+        <div class="tip">
+          人設儲存後會立即生效，<strong>下一次</strong> AI 回覆就會依照新個性說話，無需重開網頁。
+        </div>
+      </section>
+
+      <section id="photos">
+        <h2>5. 上傳與管理照片（圖片庫）</h2>
+        <p>您可以預先上傳產品圖、活動海報等，讓 AI 在合適時機自動發給客戶，或您手動選圖發送。</p>
+
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">點頂部 <span class="btn-ref">📷 圖片庫</span>。</div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">填寫<strong>名稱</strong>與<strong>關鍵字</strong>（例如名稱「夏季促銷海報」，關鍵字「促銷, 夏天, 折扣」）。AI 會依關鍵字判斷何時適合發這張圖。</div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">選擇這張圖屬於哪個<strong>人設</strong>（可選「全域」或特定個性專用）。</div>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-body">選擇圖片檔案後點 <strong>「上傳」</strong>。不需要的圖片可點刪除。</div>
+        </div>
+
+        <h3>手動發圖給某位客戶</h3>
+        <p>當該聯絡人的 AI 關閉、或您想親自送圖時：在對話區底部輸入框旁點 <strong>「管理圖片庫」</strong> 或從圖片庫選圖發送。也可使用 <kbd>Ctrl</kbd> + <kbd>V</kbd> 直接貼上剪貼簿中的截圖。</p>
+      </section>
+
+      <section id="per-contact">
+        <h2>6. 為不同客戶設定不同個性</h2>
+        <p>若某位 VIP 需要更正式的語氣，另一位需要輕鬆聊天，可以分別指定人設：</p>
+        <ol>
+          <li>先在 <span class="btn-ref">⚙️ 人設設定</span> 建立多個人設（例如「正式客服」「好友閒聊」）。</li>
+          <li>點選左側聯絡人。</li>
+          <li>在右側 <strong>「綁定 AI 人格」</strong> 下拉選單選擇要套用的人設。</li>
+          <li>選「使用全域預設人設」則跟隨您在步驟 4 套用的那一個。</li>
+        </ol>
+      </section>
+
+      <section id="memory">
+        <h2>7. 長期記憶</h2>
+        <p>
+          AI 會記住與每位客戶的重要資訊（例如對方叫什麼、買過什麼、偏好什麼），
+          讓回覆更連貫。對話累積到一定程度後，系統會<strong>自動整理</strong>成一段摘要。
+        </p>
+        <h3>查看或修改記憶</h3>
+        <ol>
+          <li>點選聯絡人。</li>
+          <li>在右側找到 <strong>「長期記憶摘要」</strong> 文字區。</li>
+          <li>可直接編輯內容，點 <strong>「儲存記憶」</strong>。</li>
+        </ol>
+        <div class="tip">
+          若 AI 記錯了客戶資訊，在這裡修正即可，不必刪除整段對話。
+        </div>
+      </section>
+
+      <section id="manual-reply">
+        <h2>8. 親自回覆訊息</h2>
+        <p>有時您想自己打字，暫時不讓 AI 代答：</p>
+        <ul>
+          <li><strong>只關閉某人：</strong>將該聯絡人的「允許 AI 代答」關閉，底部會出現輸入框。</li>
+          <li><strong>全部暫停：</strong>將頂部總開關關閉，所有聯絡人都改為手動模式。</li>
+        </ul>
+        <p>在輸入框打好文字後按送出，訊息會從您的微信帳號發出，並顯示在對話紀錄中。</p>
+      </section>
+
+      <section id="view-chat">
+        <h2>9. 查看對話內容</h2>
+        <ul>
+          <li><strong>文字訊息</strong> — 以對話氣泡顯示，左側為對方、右側為您或 AI。</li>
+          <li><strong>圖片</strong> — 會顯示縮圖，點一下可放大。</li>
+          <li><strong>語音</strong> — 會出現播放按鈕，點擊即可收聽（目前 AI 不會自動回覆語音訊息）。</li>
+          <li><strong>搜尋</strong> — 對話區上方可輸入關鍵字，在該聯絡人的紀錄中搜尋。</li>
+        </ul>
+        <p>左側聯絡人名稱旁可點編輯圖示，設定<strong>備註名稱</strong>，方便辨識（不會改變對方微信暱稱）。</p>
+      </section>
+
+      <section id="faq">
+        <h2>10. 常見問題</h2>
+
+        <h3>對方傳訊息了，AI 沒有回？</h3>
+        <ul>
+          <li>頂部是否為「AI 已開啟」？</li>
+          <li>該聯絡人的「允許 AI 代答」是否打開？</li>
+          <li>對方傳的是<strong>文字</strong>嗎？（圖片、語音目前不會觸發自動回覆）</li>
+          <li>右上角是否顯示「已連線」？若顯示離線，請聯絡工程師。</li>
+        </ul>
+
+        <h3>AI 回覆內容不滿意？</h3>
+        <ul>
+          <li>到 <span class="btn-ref">⚙️ 人設設定</span> 把規則寫清楚（語氣、不能說的話、產品重點）。</li>
+          <li>檢查該聯絡人的「長期記憶」是否寫錯，必要時手動修正。</li>
+          <li>確認是否綁定了正確的「AI 人格」。</li>
+        </ul>
+
+        <h3>想暫時全部停用 AI？</h3>
+        <p>點頂部總開關，切換為「AI 已關閉」即可。之後要恢復，再點一次打開。</p>
+
+        <h3>換了人設或照片，要重開網頁嗎？</h3>
+        <p>不用。儲存後下次回覆就會生效。</p>
+      </section>
+
+      <section id="advanced">
+        <h2>11. 進階設定（多由工程師協助）</h2>
+        <p>以下功能在 <span class="btn-ref">🛠️ 系統設定</span> 中，日常操作較少用到：</p>
+        <ul>
+          <li><strong>微信掃碼登入 / 登出</strong> — 綁定或更換要代答的微信帳號。</li>
+          <li><strong>AI 大模型設定</strong> — 切換使用 OpenAI、DeepSeek、本地模型等（需 API 金鑰與網址）。</li>
+          <li><strong>測試 AI 連線</strong> — 確認模型服務是否正常。</li>
+        </ul>
+        <div class="warn">
+          若您不熟悉 API、網址或微信登入流程，請將這些項目交給工程師處理，避免誤設導致無法回覆。
+        </div>
+        <p style="margin-top: 1rem;">
+          工程師專用文件：<a href="/manual.html">技術操作手冊</a>（含安裝、Docker、環境變數、故障排除）
+        </p>
+      </section>
+
+      <p style="margin-top: 2rem; font-size: 0.88rem; color: var(--muted); text-align: center;">
+        WeChat AI Bot · 使用者指南 · 測試版 v0.12
+      </p>
+    </main>
+  </div>
+  <script>
+    if (new URLSearchParams(window.location.search).get('embed') === '1') {
+      document.body.classList.add('embed');
+    }
+  </script>
+</body>
+</html>

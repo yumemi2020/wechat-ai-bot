@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WeChat AI Bot 操作手冊 · 測試版 v0.12</title>
+  <style>
+    :root {
+      --bg: #f4f6f8;
+      --card: #ffffff;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --accent: #16a34a;
+      --accent-soft: #dcfce7;
+      --border: #e5e7eb;
+      --warn: #d97706;
+      --warn-soft: #fef3c7;
+      --code-bg: #f3f4f6;
+      --sidebar-w: 240px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: "Segoe UI", "PingFang TC", "Microsoft JhengHei", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.65;
+      font-size: 15px;
+    }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .layout { display: flex; min-height: 100vh; }
+    .sidebar {
+      width: var(--sidebar-w);
+      flex-shrink: 0;
+      background: var(--card);
+      border-right: 1px solid var(--border);
+      padding: 1.25rem 1rem;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+    }
+    .sidebar h2 {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+      margin-bottom: 0.75rem;
+    }
+    .sidebar nav a {
+      display: block;
+      padding: 0.4rem 0.6rem;
+      border-radius: 6px;
+      color: var(--text);
+      font-size: 0.875rem;
+      text-decoration: none;
+      margin-bottom: 2px;
+    }
+    .sidebar nav a:hover { background: var(--accent-soft); color: #166534; }
+    .main { flex: 1; padding: 2rem 2.5rem 4rem; max-width: 920px; }
+    .hero {
+      background: linear-gradient(135deg, #14532d 0%, #16a34a 60%, #22c55e 100%);
+      color: #fff;
+      border-radius: 12px;
+      padding: 2rem 2.25rem;
+      margin-bottom: 2rem;
+    }
+    .hero .badge {
+      display: inline-block;
+      background: rgba(255,255,255,0.2);
+      padding: 0.25rem 0.75rem;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      margin-bottom: 0.75rem;
+    }
+    .hero h1 { font-size: 1.75rem; font-weight: 700; margin-bottom: 0.5rem; }
+    .hero p { opacity: 0.92; font-size: 0.95rem; max-width: 640px; }
+    section {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1.5rem 1.75rem;
+      margin-bottom: 1.25rem;
+    }
+    section h2 {
+      font-size: 1.2rem;
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid var(--accent-soft);
+      color: #14532d;
+    }
+    section h3 {
+      font-size: 1rem;
+      margin: 1.25rem 0 0.5rem;
+      color: #374151;
+    }
+    p { margin-bottom: 0.75rem; }
+    ul, ol { margin: 0 0 0.75rem 1.25rem; }
+    li { margin-bottom: 0.35rem; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.875rem;
+      margin: 0.75rem 0 1rem;
+    }
+    th, td {
+      border: 1px solid var(--border);
+      padding: 0.5rem 0.65rem;
+      text-align: left;
+      vertical-align: top;
+    }
+    th { background: #f9fafb; font-weight: 600; }
+    code {
+      background: var(--code-bg);
+      padding: 0.1rem 0.35rem;
+      border-radius: 4px;
+      font-size: 0.85em;
+      font-family: Consolas, "Courier New", monospace;
+    }
+    pre {
+      background: #1e293b;
+      color: #e2e8f0;
+      padding: 1rem;
+      border-radius: 8px;
+      overflow-x: auto;
+      font-size: 0.8rem;
+      margin: 0.75rem 0 1rem;
+      line-height: 1.5;
+    }
+    .flow {
+      background: #f8fafc;
+      border: 1px dashed var(--border);
+      border-radius: 8px;
+      padding: 1rem;
+      font-family: Consolas, monospace;
+      font-size: 0.78rem;
+      line-height: 1.55;
+      white-space: pre;
+      overflow-x: auto;
+      margin: 0.75rem 0;
+    }
+    .tip {
+      background: var(--accent-soft);
+      border-left: 4px solid var(--accent);
+      padding: 0.75rem 1rem;
+      border-radius: 0 8px 8px 0;
+      margin: 0.75rem 0;
+      font-size: 0.9rem;
+    }
+    .warn {
+      background: var(--warn-soft);
+      border-left: 4px solid var(--warn);
+      padding: 0.75rem 1rem;
+      border-radius: 0 8px 8px 0;
+      margin: 0.75rem 0;
+      font-size: 0.9rem;
+    }
+    .tag {
+      display: inline-block;
+      padding: 0.1rem 0.45rem;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    .tag-ok { background: #dcfce7; color: #166534; }
+    .tag-partial { background: #fef3c7; color: #92400e; }
+    .tag-no { background: #fee2e2; color: #991b1b; }
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      margin-bottom: 1rem;
+      font-size: 0.875rem;
+    }
+    body.embed .back-link { display: none; }
+    body.embed .main { padding-top: 1.25rem; }
+    @media (max-width: 768px) {
+      .layout { flex-direction: column; }
+      .sidebar { width: 100%; height: auto; position: static; }
+      .main { padding: 1.25rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <h2>目錄</h2>
+      <nav>
+        <a href="/user-guide.html" style="color:#4f46e5;font-weight:600;margin-bottom:0.5rem;display:block;">← 使用者入門指南</a>
+        <a href="#overview">系統概覽</a>
+        <a href="#architecture">架構與服務</a>
+        <a href="#daily">日常操作流程</a>
+        <a href="#ui">控制台介面說明</a>
+        <a href="#media">圖片與語音訊息</a>
+        <a href="#ai">AI 回覆機制</a>
+        <a href="#memory">長期記憶</a>
+        <a href="#persona">人設與照片庫</a>
+        <a href="#database">資料庫結構</a>
+        <a href="#env">環境變數</a>
+        <a href="#troubleshoot">常見問題</a>
+        <a href="#changelog">v0.12 更新摘要</a>
+      </nav>
+    </aside>
+
+    <main class="main">
+      <a class="back-link" href="/">← 返回控制台</a>
+
+      <div class="hero">
+        <span class="badge">測試版 v0.12</span>
+        <h1>WeChat AI Bot 操作手冊</h1>
+        <p>
+          本系統透過 WeChatPadProMAX 接收微信訊息，由本地大語言模型（LM Studio 等）自動回覆，
+          並提供網頁控制台管理聯絡人、人設、圖片庫與長期記憶。文件更新日期：2026-06-26。
+        </p>
+      </div>
+
+      <section id="overview">
+        <h2>1. 系統概覽</h2>
+        <p>整體資料流如下：</p>
+        <div class="flow">微信好友 / 群組發訊息
+    ↓
+WeChatPadProMAX（埠 1238）→ Webhook POST
+    ↓
+後端 FastAPI（埠 9950）→ 寫入 MariaDB + WebSocket 推播前端
+    ↓
+（若 AI 開啟且為文字訊息）本地 LLM（埠 1234）生成回覆
+    ↓
+WeChatPadProMAX API 發送回微信</div>
+        <table>
+          <thead>
+            <tr><th>元件</th><th>技術</th><th>預設埠</th><th>說明</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>後端</td><td>FastAPI + asyncmy + MariaDB</td><td><strong>9950</strong></td><td><code>main.py</code>，Webhook 與全部 API</td></tr>
+            <tr><td>前端</td><td>Vue 3 + Vite + Tailwind</td><td><strong>9960</strong></td><td>網頁控制台（Docker 對外埠，內部 5173）</td></tr>
+            <tr><td>資料庫</td><td>MariaDB <code>wechat_ai</code></td><td>3306（內部）</td><td>對話、人設、聯絡人設定持久化</td></tr>
+            <tr><td>本地 LLM</td><td>OpenAI 相容 API</td><td>1234</td><td>LM Studio / Ollama 等</td></tr>
+            <tr><td>微信閘道</td><td>WeChatPadProMAX</td><td>1238</td><td>收發訊息、Webhook 推送</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="architecture">
+        <h2>2. 架構與服務</h2>
+        <h3>Docker 三服務（建議部署方式）</h3>
+        <ul>
+          <li><code>wechat_ai_db</code> — MariaDB，資料目錄 <code>db_data/</code></li>
+          <li><code>wechat_ai_bot</code> — Python 後端，使用根目錄 <code>Dockerfile</code> 建置（含 gcc、ffmpeg、pilk），掛載專案至 <code>/app</code></li>
+          <li><code>wechat_ai_frontend</code> — Vite 開發伺服器，掛載 <code>frontend/</code></li>
+        </ul>
+        <div class="tip">
+          後端首次部署或更新 <code>requirements.txt</code> 後，請執行
+          <code>docker compose up -d --build wechat_ai_bot</code> 重新建置映像。
+        </div>
+        <h3>即時推播</h3>
+        <p>前端透過 WebSocket <code>/ws/frontend</code> 接收新訊息與媒體更新（<code>new_message</code>、<code>message_updated</code>），無需手動重新整理對話列表。</p>
+        <h3>背景任務</h3>
+        <ul>
+          <li><strong>AI 回覆</strong>：Webhook 收到文字訊息後即時寫庫，LLM 思考在背景執行。</li>
+          <li><strong>圖片 / 語音下載</strong>：Webhook 先寫佔位文字並立即回 200，避免 PadPro 逾時重試；背景下載完成後更新 DB 並推播前端。</li>
+          <li><strong>記憶萃取</strong>：每累積 20 則訊息，背景呼叫 LLM 更新長期記憶摘要。</li>
+        </ul>
+      </section>
+
+      <section id="daily">
+        <h2>3. 日常操作流程</h2>
+        <h3>微信掃碼登入 / 登出（v0.09+）</h3>
+        <ol>
+          <li>點控制台 <strong>🛠️ 系統設定</strong>。</li>
+          <li><strong>登入</strong>：點「產生 QR Code 掃碼登入」，掃碼後自動 <code>Newinit</code> + 註冊 Webhook。</li>
+          <li><strong>切換帳號</strong>：先點「登出微信帳號」→ 再產生新 QR Code 掃碼。</li>
+          <li>登出時系統會呼叫 PadPro <code>/Login/LogOut</code>，並將 Webhook 設為 <code>enabled: false</code>。</li>
+        </ol>
+        <h3>啟用某位好友的 AI 代答</h3>
+        <ol>
+          <li>確認頂部<strong>全域 AI 開關</strong>為開啟（綠色）。</li>
+          <li>左側點選聯絡人，右側開啟<strong>「允許 AI 代答」</strong>開關。</li>
+          <li>新聯絡人預設為「一般名單」（AI 關閉），需手動開啟。</li>
+          <li>群組（<code>@chatroom</code>）新建時同樣預設關閉 AI。</li>
+        </ol>
+        <h3>手動介入回覆</h3>
+        <p>當全域 AI 關閉，或該聯絡人 AI 關閉時，底部會出現手動輸入框。可發送文字、從圖片庫選圖，或 <kbd>Ctrl</kbd>+<kbd>V</kbd> 貼上截圖。</p>
+        <h3>AI 大模型設定（v0.11+）</h3>
+        <ol>
+          <li>點控制台 <strong>🛠️ 系統設定</strong>，開啟「🤖 AI 大模型設定」面板。</li>
+          <li>可新增多組 LLM 設定（OpenAI / DeepSeek / Groq / Ollama / 自訂），並標示「使用中」的啟用項。</li>
+          <li>切換啟用後，下一次 AI 回覆與記憶萃取即套用新模型；無需重啟後端。</li>
+          <li>首次啟動若資料庫尚無設定，會自動從 <code>.env</code> 的 <code>LOCAL_API_*</code> 匯入一筆並設為啟用。</li>
+        </ol>
+        <h3>測試 LLM 連線</h3>
+        <p>點頂部「測試 AI 連線」，確認目前啟用中的模型可正常回覆。若失敗，請在系統設定檢查 Base URL、Model Name 與 API Key。</p>
+        <h3>重啟 / 重建後端</h3>
+        <pre># 僅重啟（改 main.py，有 --reload 時通常足夠）
+docker restart wechat_ai_bot
+
+# 更新 requirements.txt 或 Dockerfile 後重建
+docker compose up -d --build wechat_ai_bot</pre>
+      </section>
+
+      <section id="ui">
+        <h2>4. 控制台介面說明</h2>
+        <table>
+          <thead>
+            <tr><th>區塊</th><th>功能</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>頂部列</td><td>版本號（開啟手冊）、全域 AI 開關、測試連線、圖片庫、人設設定、🛠️ 系統設定（LLM / 掃碼登入）、連線狀態</td></tr>
+            <tr><td>左欄聯絡人</td><td>依最後訊息時間排序；顯示暱稱或 wx_id；AI 處理中標籤</td></tr>
+            <tr><td>右欄標題</td><td>暱稱編輯、負責專員（綁定人格）、聯絡人 AI 開關、綁定 AI 人格下拉選單</td></tr>
+            <tr><td>長期記憶區</td><td>顯示 / 編輯 <code>memory_summary</code>，點「儲存記憶」寫入資料庫</td></tr>
+            <tr><td>搜尋列</td><td>在該聯絡人對話中關鍵字搜尋</td></tr>
+            <tr><td>對話區</td><td>文字氣泡；<code>[IMAGE_MSG]</code> 渲染為圖片（可點擊放大）；<code>[VOICE_MSG]</code> 渲染為語音播放器</td></tr>
+            <tr><td>底部輸入</td><td>手動回覆（AI 關閉時）或僅供監看（AI 開啟時）</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="media">
+        <h2>5. 圖片與語音訊息（v0.09）</h2>
+        <h3>圖片（msgType = 3）</h3>
+        <ol>
+          <li>Webhook 收到後先寫入 <code>[圖片訊息]</code> 佔位，立即回應 PadPro。</li>
+          <li>背景依序嘗試 <code>CdnDownloadImage</code>、<code>DownloadImg</code> 下載。</li>
+          <li>存檔至 <code>/app/photos/received/</code>，DB 寫入 <code>[IMAGE_MSG]/api/media/received/{token}/file</code>。</li>
+          <li>前端透過 <code>message_updated</code> 自動替換為可顯示圖片；點擊可全螢幕預覽。</li>
+        </ol>
+        <h3>語音（msgType = 34）</h3>
+        <ol>
+          <li>Webhook 收到後先寫入 <code>[語音訊息]</code> 佔位。</li>
+          <li>背景依序嘗試 Webhook base64、<code>CdnDownloadImage</code>（voiceurl）、<code>DownloadVoice</code>。</li>
+          <li>以 <code>pilk</code> 解碼 SILK，再經 <code>ffmpeg</code> 轉為 MP3。</li>
+          <li>存檔至 <code>/app/photos/received/voices/</code>，DB 寫入 <code>[VOICE_MSG]/api/media/received/{token}/file</code>。</li>
+          <li>前端顯示 <code>&lt;audio controls&gt;</code> 播放條。</li>
+        </ol>
+        <div class="warn">
+          <strong>注意：</strong>圖片與語音訊息<strong>不觸發 AI 自動回覆</strong>（與文字訊息分流）。語音轉文字（ASR）尚未實作。
+        </div>
+        <h3>自己從手機發出的圖片 / 語音</h3>
+        <p>標記為 <code>[手機回覆]</code>，同樣在背景下載並更新顯示，不觸發 AI。</p>
+      </section>
+
+      <section id="ai">
+        <h2>6. AI 回覆機制</h2>
+        <h3>雙重驗證</h3>
+        <p>必須同時滿足：<strong>全域 AI 開</strong> + <strong>該聯絡人 ai_enabled = true</strong>，且訊息為<strong>文字（msgType=1）</strong>，才會觸發自動回覆。</p>
+        <h3>System Prompt 組裝順序</h3>
+        <ol>
+          <li>當前時間感知（依 <code>APP_TIMEZONE</code>，預設台北）</li>
+          <li>長期記憶摘要（若有 <code>memory_summary</code>）</li>
+          <li>聯絡人綁定人格，或全域啟用人設</li>
+          <li>該人格專屬照片庫目錄（供 AI 使用 <code>[發送照片: 關鍵字]</code>）</li>
+        </ol>
+        <h3>短期對話上下文（滑動視窗）</h3>
+        <p>每次呼叫 LLM 前，從 <code>messages</code> 表讀取最近 <strong>30 則</strong>訊息（<code>SLIDING_WINDOW_MESSAGE_LIMIT</code>），轉為多輪對話格式。圖片 / 語音標記會轉為「已發送圖片 / 已發送語音」文字描述。</p>
+        <h3>三大防護網</h3>
+        <ul>
+          <li><strong>滑動視窗</strong>：避免 context 過長。</li>
+          <li><strong>斷線救援</strong>：LLM 失敗時發送備用台詞，不讓對話靜默。</li>
+          <li><strong>圖片空包彈</strong>：AI 標記要發的圖若檔案不存在，自動抹除標籤避免錯誤。</li>
+        </ul>
+        <h3>Webhook 自我訊息防護</h3>
+        <p>從手機發出的訊息會寫入 DB 並標記 <code>[手機回覆]</code>，<strong>絕不觸發 AI</strong>，避免無限迴圈。</p>
+        <h3>訊息特殊標記</h3>
+        <table>
+          <thead><tr><th>標記</th><th>說明</th></tr></thead>
+          <tbody>
+            <tr><td><code>[手機回覆]</code></td><td>您從手機親自發出的訊息</td></tr>
+            <tr><td><code>[網頁回覆]</code></td><td>控制台手動發送</td></tr>
+            <tr><td><code>[wxid_xxx]:</code></td><td>群組內發言者標註</td></tr>
+            <tr><td><code>[IMAGE_MSG]/api/...</code></td><td>圖片訊息，前端渲染為圖片</td></tr>
+            <tr><td><code>[VOICE_MSG]/api/...</code></td><td>語音訊息，前端渲染為播放器</td></tr>
+            <tr><td><code>[圖片訊息]</code> / <code>[語音訊息]</code></td><td>下載中的佔位文字，完成後由 WebSocket 更新</td></tr>
+            <tr><td><code>[發送照片: 關鍵字]</code></td><td>AI 內部標記，後端攔截後發圖並從文字移除</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="memory">
+        <h2>7. 長期記憶</h2>
+        <h3>自動萃取</h3>
+        <ul>
+          <li>當某位聯絡人<strong>訊息總數</strong>達 20、40、60… 則時，背景任務自動執行。</li>
+          <li>讀取舊記憶 + 最近 20 則對話，由獨立分析 prompt 萃取個人資訊（職業、喜好等）。</li>
+          <li>結果寫入 <code>contact_settings.memory_summary</code>（約 100 字內）。</li>
+        </ul>
+        <h3>手動編輯</h3>
+        <p>在聯絡人詳情區的「長期記憶摘要」文字框編輯後，點「儲存記憶」即可覆寫資料庫內容。</p>
+        <h3>資料庫查詢範例</h3>
+        <pre>SELECT wx_id, nickname, memory_summary
+FROM contact_settings
+WHERE memory_summary IS NOT NULL;</pre>
+      </section>
+
+      <section id="persona">
+        <h2>8. 人設與照片庫</h2>
+        <h3>多人設庫</h3>
+        <p>可建立多個 AI 人格（名稱 + System Prompt），其中一個為「全域啟用」。未單獨綁定的聯絡人使用全域啟用人設。</p>
+        <h3>聯絡人專屬人格</h3>
+        <p>右欄「綁定 AI 人格」下拉選單可為每位客人指定專屬人格；選「使用全域預設人設」則跟隨全域啟用者。</p>
+        <h3>照片庫與人格隔離</h3>
+        <ul>
+          <li>上傳圖片時需選擇「所屬 AI 人格」。</li>
+          <li>AI 發圖時只會從該聯絡人當前人格的照片庫中選圖。</li>
+          <li>已發送過的圖片 ID 會記錄在 <code>sent_photo_ids</code>，避免重複發同一張。</li>
+        </ul>
+      </section>
+
+      <section id="database">
+        <h2>9. 資料庫結構</h2>
+        <table>
+          <thead><tr><th>資料表</th><th>用途</th><th>關鍵欄位</th></tr></thead>
+          <tbody>
+            <tr><td><code>messages</code></td><td>所有對話紀錄</td><td>wx_id, content, is_ai, created_at</td></tr>
+            <tr><td><code>contact_settings</code></td><td>聯絡人設定</td><td>ai_enabled, nickname, memory_summary, assigned_profile_id, sent_photo_ids</td></tr>
+            <tr><td><code>system_prompt_profiles</code></td><td>AI 人設庫</td><td>name, content, is_active</td></tr>
+            <tr><td><code>photo_assets</code></td><td>發圖素材</td><td>name, keywords, profile_id, file_path</td></tr>
+            <tr><td><code>llm_configs</code></td><td>AI 大模型設定</td><td>name, provider, api_key, base_url, model_name, temperature, is_active</td></tr>
+            <tr><td><code>wechat_accounts</code></td><td>已綁定微信帳號</td><td>wx_id, nickname, webhook_registered</td></tr>
+          </tbody>
+        </table>
+        <div class="warn">
+          <strong>重啟後會重置的項目：</strong>全域 AI 開關（預設 True）、WebSocket 連線清單、掃碼登入暫存 session。
+          人設、對話、記憶、聯絡人設定皆持久化在資料庫。
+        </div>
+      </section>
+
+      <section id="env">
+        <h2>10. 環境變數（.env）</h2>
+        <table>
+          <thead><tr><th>變數</th><th>說明</th></tr></thead>
+          <tbody>
+            <tr><td><code>LOCAL_API_BASE</code></td><td>首次啟動種子用 LLM API 位址（之後請改在 UI 管理）</td></tr>
+            <tr><td><code>LOCAL_API_KEY</code></td><td>首次啟動種子用 API Key（可留空，如 Ollama）</td></tr>
+            <tr><td><code>LOCAL_MODEL_NAME</code></td><td>首次啟動種子用模型名稱</td></tr>
+            <tr><td><code>PADPRO_URL</code> / <code>PADPRO_AUTH_KEY</code> / <code>PADPRO_WXID</code></td><td>微信閘道設定</td></tr>
+            <tr><td><code>PADPRO_WEBHOOK_PUBLIC_URL</code></td><td>掃碼登入後自動註冊的 Webhook 公網 / 區網 URL</td></tr>
+            <tr><td><code>DATABASE_URL</code></td><td>MariaDB 連線字串（asyncmy）</td></tr>
+            <tr><td><code>SLIDING_WINDOW_MESSAGE_LIMIT</code></td><td>LLM 短期上下文則數（預設 30）</td></tr>
+            <tr><td><code>MEMORY_EXTRACTION_INTERVAL</code></td><td>自動記憶萃取間隔（預設每 20 則）</td></tr>
+            <tr><td><code>SYNC_POLL_ENABLED</code></td><td>PadPro 輪詢同步（預設 false，開啟可能導致斷線）</td></tr>
+            <tr><td><code>APP_TIMEZONE</code></td><td>時間感知時區（預設 Asia/Taipei）</td></tr>
+            <tr><td><code>PHOTOS_DIR</code></td><td>照片與接收媒體目錄（預設 <code>/app/photos</code>）</td></tr>
+          </tbody>
+        </table>
+        <p>前端 API 位址：<code>frontend/.env</code> 的 <code>VITE_API_BASE</code>（預設 <code>http://127.0.0.1:9950</code>，部署時請改為實際伺服器位址）。</p>
+      </section>
+
+      <section id="troubleshoot">
+        <h2>11. 常見問題</h2>
+        <h3>API 404（例如 assigned_profile）</h3>
+        <p>後端容器可能仍在跑舊程式。執行 <code>docker restart wechat_ai_bot</code>，或確認 uvicorn 有 <code>--reload</code>。</p>
+        <h3>AI 不回覆</h3>
+        <ul>
+          <li>檢查全域 AI 與聯絡人 AI 開關是否都開啟。</li>
+          <li>確認訊息為<strong>文字</strong>；圖片、語音不會觸發 AI。</li>
+          <li>點「測試 AI 連線」確認 LLM 服務正常。</li>
+          <li>查看後端日誌是否有 Webhook 收到訊息的記錄。</li>
+        </ul>
+        <h3>圖片 / 語音只顯示佔位文字</h3>
+        <ul>
+          <li>查看日誌是否有 <code>無法下載客人圖片</code> 或 <code>無法下載客人語音</code>。</li>
+          <li>語音轉檔需容器內已安裝 <code>ffmpeg</code> 與 <code>pilk</code>；請執行 <code>docker compose up -d --build</code>。</li>
+          <li>確認 PadPro 閘道與 <code>PADPRO_AUTH_KEY</code> 正常。</li>
+        </ul>
+        <h3>PadPro Webhook 逾時重試</h3>
+        <p>v0.09 已改為媒體背景下載；若仍出現重試，請確認後端為最新版且 Webhook 能在 1 秒內回 200。</p>
+        <h3>pilk 安裝失敗（gcc not found）</h3>
+        <p>請使用專案根目錄 <code>Dockerfile</code> 建置後端，內含 gcc、g++、python3-dev。勿僅用裸 <code>python:3.10-slim</code> 映像直接 pip install。</p>
+        <h3>記憶沒有自動更新</h3>
+        <p>需累積滿 20 則訊息才會觸發；可手動在 UI 編輯，或查資料庫 <code>memory_summary</code> 欄位。</p>
+        <h3>微信斷線</h3>
+        <p>請保持 <code>SYNC_POLL_ENABLED=false</code>，避免頻繁呼叫 PadPro Sync API。</p>
+      </section>
+
+      <section id="changelog">
+        <h2>12. 測試版 v0.12 更新摘要</h2>
+        <h3>本版新增</h3>
+        <table>
+          <thead><tr><th>功能</th><th>狀態</th></tr></thead>
+          <tbody>
+            <tr><td>使用者入門指南（<code>user-guide.html</code>，面向非技術人員）</td><td><span class="tag tag-ok">已完成</span></td></tr>
+            <tr><td>控制台說明彈窗：一般使用 / 技術手冊分頁切換</td><td><span class="tag tag-ok">已完成</span></td></tr>
+          </tbody>
+        </table>
+        <h3>延續自 v0.11</h3>
+        <table>
+          <thead><tr><th>功能</th><th>狀態</th></tr></thead>
+          <tbody>
+            <tr><td>資料庫 <code>llm_configs</code> 表（多組模型設定）</td><td><span class="tag tag-ok">已完成</span></td></tr>
+            <tr><td>系統設定：AI 大模型管理（新增 / 啟用 / 刪除）</td><td><span class="tag tag-ok">已完成</span></td></tr>
+            <tr><td>供應商範本（OpenAI / DeepSeek / Groq / Ollama）</td><td><span class="tag tag-ok">已完成</span></td></tr>
+            <tr><td>每次 AI 呼叫動態讀取啟用中的 LLM 設定</td><td><span class="tag tag-ok">已完成</span></td></tr>
+          </tbody>
+        </table>
+        <h3>延續自 v0.10</h3>
+        <table>
+          <thead><tr><th>功能</th><th>狀態</th></tr></thead>
+          <tbody>
+            <tr><td>系統設定：登出微信帳號（PadPro LogOut）</td><td><span class="tag tag-ok">已完成</span></td></tr>
+            <tr><td>登出時自動停用 Webhook（enabled=false）</td><td><span class="tag tag-ok">已完成</span></td></tr>
+            <tr><td>切換帳號流程說明（登出 → 再掃碼）</td><td><span class="tag tag-ok">已完成</span></td></tr>
+          </tbody>
+        </table>
+        <h3>延續自 v0.09</h3>
+        <table>
+          <thead><tr><th>功能</th><th>狀態</th></tr></thead>
+          <tbody>
+            <tr><td>掃碼登入 + 自動註冊 Webhook</td><td><span class="tag tag-ok">已完成</span></td></tr>
+            <tr><td>接收圖片（背景下載、顯示、點擊放大）</td><td><span class="tag tag-ok">已完成</span></td></tr>
+            <tr><td>接收語音（SILK→MP3、audio 播放）</td><td><span class="tag tag-ok">已完成</span></td></tr>
+            <tr><td>Webhook 媒體背景下載（防 PadPro 逾時）</td><td><span class="tag tag-ok">已完成</span></td></tr>
+            <tr><td>WebSocket <code>message_updated</code> 媒體更新推播</td><td><span class="tag tag-ok">已完成</span></td></tr>
+            <tr><td>後端 Dockerfile（gcc / ffmpeg / pilk）</td><td><span class="tag tag-ok">已完成</span></td></tr>
+            <tr><td>自己手機訊息防護（不觸發 AI）</td><td><span class="tag tag-ok">已完成</span></td></tr>
+          </tbody>
+        </table>
+        <h3>延續自 v0.08 的既有功能</h3>
+        <table>
+          <thead><tr><th>功能</th><th>狀態</th></tr></thead>
+          <tbody>
+            <tr><td>Webhook 非同步 AI 回覆</td><td><span class="tag tag-ok">已完成</span></td></tr>
+            <tr><td>多人設庫 + 前端管理</td><td><span class="tag tag-ok">已完成</span></td></tr>
+            <tr><td>聯絡人專屬人格綁定</td><td><span class="tag tag-ok">已完成</span></td></tr>
+            <tr><td>照片庫依人格隔離 + 去重發送</td><td><span class="tag tag-ok">已完成</span></td></tr>
+            <tr><td>DB 滑動視窗短期記憶</td><td><span class="tag tag-ok">已完成</span></td></tr>
+            <tr><td>長期記憶自動萃取 + 手動編輯</td><td><span class="tag tag-ok">已完成</span></td></tr>
+            <tr><td>動態時間感知</td><td><span class="tag tag-ok">已完成</span></td></tr>
+            <tr><td>前端 WebSocket 即時推播</td><td><span class="tag tag-ok">已完成</span></td></tr>
+          </tbody>
+        </table>
+        <h3>尚未實作</h3>
+        <table>
+          <thead><tr><th>功能</th><th>狀態</th></tr></thead>
+          <tbody>
+            <tr><td>語音轉文字（ASR）</td><td><span class="tag tag-no">未實作</span></td></tr>
+            <tr><td>全域 AI 開關 DB 持久化</td><td><span class="tag tag-no">未實作</span></td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <p style="margin-top: 2rem; font-size: 0.85rem; color: var(--muted); text-align: center;">
+        WeChat AI Bot · 測試版 v0.12 · 操作手冊
+      </p>
+    </main>
+  </div>
+  <script>
+    if (new URLSearchParams(window.location.search).get('embed') === '1') {
+      document.body.classList.add('embed')
+    }
+  </script>
+</body>
+</html>

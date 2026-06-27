@@ -1,0 +1,68 @@
+# 與 WeChatPadProMAX 整合的 Docker Compose 範例
+#
+# 使用方式：
+#   1. 先安裝並啟動 WeChatPadProMAX（官方：https://wx.knowhub.cloud/）
+#   2. 確認 PadPro 已建立 Docker 網路 wechatpadpromax_wechat_net，或手動建立：
+#        docker network create wechatpadpromax_wechat_net
+#   3. 在專案根目錄複製設定檔並填寫真實值：
+#        cp .env.example .env
+#        cp frontend/.env.example frontend/.env
+#   4. 啟動（於專案根目錄執行）：
+#        docker compose -f deploy/docker-compose.with-padpro.yml up -d --build
+#
+# 此檔與根目錄 docker-compose.yml 等價，僅集中說明 PadPro 網路需求。
+
+version: '3.8'
+
+services:
+  db:
+    image: mariadb:10.11
+    container_name: wechat_ai_db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-changeme}
+      MYSQL_DATABASE: wechat_ai
+    volumes:
+      - ../db_data:/var/lib/mysql
+    networks:
+      - default
+      - wechatpadpromax_wechat_net
+
+  wechat_ai_bot:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    container_name: wechat_ai_bot
+    depends_on:
+      - db
+    restart: always
+    ports:
+      - "9950:8000"
+    volumes:
+      - ..:/app
+    working_dir: /app
+    env_file:
+      - ../.env
+    networks:
+      - default
+      - wechatpadpromax_wechat_net
+
+  frontend:
+    image: node:18-alpine
+    container_name: wechat_ai_frontend
+    restart: always
+    ports:
+      - "9960:5173"
+    volumes:
+      - ../frontend:/app
+    working_dir: /app
+    command: sh -c "npm install && npm run dev -- --host"
+    depends_on:
+      - wechat_ai_bot
+    networks:
+      - default
+      - wechatpadpromax_wechat_net
+
+networks:
+  wechatpadpromax_wechat_net:
+    external: true

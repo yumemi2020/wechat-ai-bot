@@ -1,0 +1,64 @@
+# Portainer Stack 範例（已去敏）
+#
+# 使用方式：
+#   1. 將 <YOUR_DATA_PATH> 替換為專案在宿主機上的實際路徑（例如 /volume1/docker/wechat-ai-bot）
+#   2. 複製 .env.example 為 .env 並填入真實設定
+#   3. 確認 PadPro 外部網路已建立：docker network create wechatpadpromax_wechat_net
+#   4. Portainer → Stacks → Add stack → 貼上此 YAML → Deploy
+#
+# 後端映像請先 build：docker build -t wechat-ai-bot:latest <YOUR_DATA_PATH>
+# 或將 wechat_ai_bot 的 image 改為 build 區塊（context: <YOUR_DATA_PATH>）
+
+version: '3.8'
+
+services:
+  db:
+    image: mariadb:10.11
+    container_name: wechat_ai_db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-changeme}
+      MYSQL_DATABASE: wechat_ai
+    volumes:
+      - <YOUR_DATA_PATH>/db_data:/var/lib/mysql
+    networks:
+      - default
+      - wechatpadpromax_wechat_net
+
+  wechat_ai_bot:
+    image: wechat-ai-bot:latest
+    container_name: wechat_ai_bot
+    depends_on:
+      - db
+    restart: always
+    ports:
+      - "9950:8000"
+    volumes:
+      - <YOUR_DATA_PATH>:/app
+    working_dir: /app
+    env_file:
+      - <YOUR_DATA_PATH>/.env
+    command: sh -c "pip install -r requirements.txt && uvicorn main:app --host 0.0.0.0 --port 8000 --reload"
+    networks:
+      - default
+      - wechatpadpromax_wechat_net
+
+  frontend:
+    image: node:18-alpine
+    container_name: wechat_ai_frontend
+    restart: always
+    ports:
+      - "9960:5173"
+    volumes:
+      - <YOUR_DATA_PATH>/frontend:/app
+    working_dir: /app
+    command: sh -c "npm install && npm run dev -- --host"
+    depends_on:
+      - wechat_ai_bot
+    networks:
+      - default
+      - wechatpadpromax_wechat_net
+
+networks:
+  wechatpadpromax_wechat_net:
+    external: true
