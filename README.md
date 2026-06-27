@@ -159,7 +159,6 @@ docker compose up -d --build
 | 使用者指南 | `http://<主機>:9960/user-guide.html` | 操作說明 |
 | 技術手冊 | `http://<主機>:9960/manual.html` | 架構、API、除錯 |
 | 開發筆記 | [`docs/AI_PERSONA_AND_DB_STATUS.md`](docs/AI_PERSONA_AND_DB_STATUS.md) | 資料表與實作現況 |
-| 開源審查確認書 | [`docs/OPEN_SOURCE_READINESS.md`](docs/OPEN_SOURCE_READINESS.md) | 上架前機敏資料核對清單 |
 
 PadPro 官方文件：[WeChatPadProMAX](https://wx.knowhub.cloud/)
 
